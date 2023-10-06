@@ -1,0 +1,118 @@
+O que e Docker?
+
+Uma plataforma que foi criada pra construir, rodar e trasnferir do ambiente local um amabiente de producao.
+Criar um amabiente virtual e subir para um servidor.
+
+[Arquivos, configuracao, ambiente] - Container
+
+Hardware -> Hypervisor - [Win,Linux,Mac]
+
+Hardware -> Linux - [Debian, Win, Linux[Cent], Linux[Ubun]] {enviroments}
+
+Como funciona o Docker?
+
+Aplicacao [backend,frontend, db] <- {dockerfile} - Imagem [Pedaco do Sistema, Ambiente (node), Arquivos, Bibliotecas, Variaveis] -> Container -> servidor
+
+Docker Hub
+
+Container -> Registry(Docker hub) -> Production Server
+
+Criando a minha primeira imagem
+
+FROM node:alpine - Referencia da imagem
+COPY . /app - Copiando todos os Arquivos da Pasta
+WORKDIR /app - Trabalhando a partir do diretorio [/app]
+CMD node app.js - Executando comandos
+
+
+$ docker build -t hi-docker . [Comando de build e colocando uma tag[nome da imagem]]
+
+$ docker images [Listando imagens]
+
+$ docker run hi-docker [Rodando imagem]
+
+Linux
+
+$ docker run -it ubuntu [Executando no modo interativo para manter a imagem rodando]
+
+  apt list [Listas os pacotes ja instalados]
+  apt update [Baixas os apts mais utilizados]
+  apt install *** [Instalar um package]
+  apt remove *** [Remover um package]
+  ls - [Listar conteudo do diretorio]
+  ls -l - [Lista e informacoes do dos Arquivos e Diretorio]
+  cd ~ - [Vai para o diretorio home]
+  cd *** - [Vai para o diretorio]
+  pwd - [Informa o caminho desd home]
+  mkdir *** - [Criando um diretorio]
+  mv *** *** [Renomeando arquivos ou diretorios]
+  rm *** [Deleta arquivos] | rm hi* [Deleta tudo o que comeca com ...] | rm *** -r [Remove diretorios]
+  nano ***.txt - [Criando um arquivo de texto]
+  cat ***.txt - [Exibindo o arquivo de texto]
+  more *** - [Mostra o que tem no arquivo]
+  cat *** > *** [Criar um arquivo com o mesmo conteudo do outro]
+  cat *** *** > *** [Criar um arquivo o conteudo de dois arquivos]
+  echo *** > ***.txt - [Escrever e criar um arquivo a partir disso]
+  grep hello ***.txt - [Verificando se um texto esta dentro do arquivo] | grep hello fil* [Verificando em todos os arquivos que comecem com...] 
+  find /***/ - [Lista todos arquivos de um diretorio] | find -type f - [Lista todos os arquivos] | find -type d [Lista todos os diretorios] | find -type f -name "docker.txt" [Busca pelo arquivo com esse mesmo nome] | find -type f -name "do*" [Busca pelo arquivo que comeca com...]
+  *** ; *** ; - [Rodando dois comandos] | *** && *** - [Rodando dois comandos]
+  ps - [Listar comandos em execucao e seu tempo de duracao]
+  addgroup [nome do Grupo] - [Adicionando grupo]
+  adduser -S -G [nome do usuario] [nome do Grupo] - [Criando e Adicionando um usuario a um grupo]
+
+  {1 Usuario}{2 Grupo}{3 Todos os outros}
+  {-rwx}{rw-}{r--}
+  {Ler,Escrever,Executar}  
+
+  chmod u+x ***.txt - [Adicionando permissao]
+
+Criando Imagens Docker
+
+Imagem - [Sistema Operacional,Bibliotecas,Arquivos da Aplicacao, Variaveis de ambiente] - Tudo o que necessario para uma aplicacao rodar
+Container - [Um ambiente isolado, {Iniciado,Parado},Processo rodando numa maquina]
+App -> Imagem[Dockerfile] -> Container [Imagen, Roda aplicacao]
+
+Dockerfile
+  FROM - [Imagem que vai carregar e plataforma] - NODE: ubuntu | centos | alpine
+  WORKDIR = [Trabalhar a partir de ....]
+  COPY/ADD = [Copiar ou adicionar arquivos que fazem parte da aplicacao] COPY [File] [PARA]
+  RUN - [Comandos para instalar as dependencias]
+  ENV - [Definir uma variavel de ambiente]
+  USER- [Usuario que vai executar]
+  ADD - [Ler e descompacta um arquivo para o diretorio]
+  CMD - [Comandos para executar a aplicacao]
+  EXPOSE - [Responsavel por expor a porta a ser utilizada]
+  ENTRYPOINT
+
+$ docker build -t app . - [Construindo imagem, nomeando e selecionando seus arquivos]
+$ docker run -it app sh - [Criando um container,Executando no modo interativo para manter a imagem rodando e abrindo no shell]
+$ {docker run -d -p |docker run -dp} 3000:3000 app - [Rodando aplicacao em bacjground e mapeando sua rota]
+$ docker build -t app:prd-v1.0.1 . - [Construindo a imagem e tageando o nome da versao]
+$ docker image tag app:latest app:prd-v1.0.0 - [Atualizando a tag de referencia da imagem]
+$ docker image tag 616055eb5292 ocesar9/app:v1 - [Recriando imagem atual para o Dockerhub]
+$ docker push ocesar9/app:v1 - [Enviando repositorio para Dokckerhub]
+$ docker image save -o appv2.tar app:v2 - [Exportando um arquivo de imagem]
+$ docker image load -i appv2.tar - [Importando arquivo de imagem]
+$ docker prune images -a - [Remover todas as imagens]
+$ docker run -d --name manga app:v2 - [Inicializando imagem em modo background e nomeando o container]
+$ $ docker logs -f c5d1046f9658 - [Vizualizando logs em tempo real do container]
+$ docker run -dp 80:3000 --name banana app:v2 [Inicializando imagem em modo background , nomeando o container e mapeando sua rota]
+$ docker exec banana ls - [Executando comandos dentros do container]
+$ docker start banana - [Inicializando container]
+$ docker stop banana - [Parando a execucao do container]
+$ docker rm -f manga - [Removendo container]
+$ docker ps -a - [Listar containers parados]
+$ docker run -dp 3000:3000  --name kiwi2 -v app-dados:/app/dados app:v2 - [Criando um container a partir de um volume associado a uma imagem]
+$ docker exec -it kiwi sh - [Acessando o container e colocando em modo interativo com o terminal] 
+$ docker cp kiwi:/app/kiwi.txt . - [Copiando um arquivo de um volume alocando no container local]
+$ docker cp banana.txt kiwi:/app/ - [Copiando um arquivo de um container local para um container]
+$ docker-compose up -d - [Construi a imagem a partir de um arquivo docker compose e mantem os containers associados em execucao]
+$ docker-compose down - [Para a execucao do docker compose]
+$ docker-compose ps - [Lista os container associados docker compose que estao em execucao]
+$ docker exec -it netflix_frontend_1 sh [Dentro do bash e possivel pingar e verificar a conexao com outros container]
+  $ ping backend
+  $ ping db
+  $ ping frontend
+$ docker-compose logs -f - [Exibe os logs de cada container associado divido por secao]
+
+

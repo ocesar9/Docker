@@ -1,0 +1,29 @@
+version: "3.8" - [Inicia verificando a versao]
+
+services: - [Nomes dos containers]
+  frontend:
+    depends_on: [Dependencias de execucao]
+      - backend
+    build: ./frontend - [Constroi a partir do Dockerfile do frontend]
+    ports: [Porta de execucao do Dockerfile do frontend]
+      - 3000:3000
+
+  backend: 
+    depends_on: [Dependencias de execucao]
+      - db
+    build: ./backend - [Constroi a partir do Dockerfile do backend]
+    ports: [Porta de execucao do Dockerfile do backend]
+      - 3001:3001
+    environment: [Volume e comando de execucao]
+      DB_URL: mongodb://db/vidly
+    command: ./docker-entrypoint.sh
+
+  db: [Define a imagem]
+    image: mongo:4.0-xenial
+    ports: [Porta padrao utilizada pelo mongo]
+      - 27017:27017
+    volumes: [Alocacao de volume]
+      - vidly:/data/db
+
+volumes:
+  vidly:
